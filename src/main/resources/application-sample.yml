@@ -1,0 +1,13 @@
+#W celu użycia pliku należy zmienić jego nazwę na "application.yml" i ustawić dane dostępowe do bazy danych
+spring:
+  profiles.active: development
+---
+spring:
+  profiles: development
+  application:
+    name: populator
+  datasource:
+    url: jdbc:mysql://PATH_TO_DATABASE?useUnicode=yes&characterEncoding=UTF-8&useSSL=false&serverTimezone=UTC
+    username: USERNAME
+    password: PASSWORD
+    driver-class-name: com.mysql.cj.jdbc.Driver
