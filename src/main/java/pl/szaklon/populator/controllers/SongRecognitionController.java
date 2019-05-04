@@ -20,9 +20,9 @@ public class SongRecognitionController {
 
 
     @PostMapping
-    public ResponseEntity recognizeSong(@RequestParam MultipartFile song, @RequestParam(required = false, defaultValue = "3") int numberOfSongs) {
+    public ResponseEntity recognizeSong(@RequestParam MultipartFile song, @RequestParam(required = false, defaultValue = "3") int numberOfSongs, @RequestParam(required = false, defaultValue = "") String genre) {
         logger.info("Got POST call on endpoint '/recognize'");
-        return songRecognitionService.rezognizeSong(song,numberOfSongs);
+        return songRecognitionService.rezognizeSong(song,numberOfSongs,genre);
     }
 
 }

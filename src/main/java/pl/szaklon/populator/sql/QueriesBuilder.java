@@ -121,7 +121,7 @@ public class QueriesBuilder {
 
     }
 
-    public SortedSet<SongMseResult> mse(double[] features, int numberOfSongs) throws SQLException {
+    public SortedSet<SongMseResult> mse(double[] features, int numberOfSongs, String genre) throws SQLException {
         Connection connection = dataSource.getConnection();
 
         String query = "SELECT * FROM populator.SONGS_FEATURES JOIN populator.SONGS_INFO ON SONGS_FEATURES.ID = SONGS_INFO.ID";
@@ -134,21 +134,24 @@ public class QueriesBuilder {
 
         while (rs.next()) {
 
-            double mse = 0;
+            if(genre.equals("") || rs.getString("GENRE").toLowerCase().trim().equals(genre.toLowerCase().trim())) {
 
-            for (int i = 0; i < features.length; i++) {
-                double value = rs.getDouble("FEATURE_" + i);
+                double mse = 0;
 
-                mse += Math.pow(features[i] - value, 2);
+                for (int i = 0; i < features.length; i++) {
+                    double value = rs.getDouble("FEATURE_" + i);
 
-            }
+                    mse += Math.pow(features[i] - value, 2);
 
-            mse /= features.length;
+                }
 
-            songMseResultSortedSet.add(new SongMseResult(rs.getString("NAME"),rs.getString("URL"),rs.getString("GENRE"),mse));
+                mse /= features.length;
 
-            while(songMseResultSortedSet.size() > numberOfSongs) {
-                songMseResultSortedSet.remove(songMseResultSortedSet.last());
+                songMseResultSortedSet.add(new SongMseResult(rs.getString("NAME"), rs.getString("URL"), rs.getString("GENRE"), mse));
+
+                while (songMseResultSortedSet.size() > numberOfSongs) {
+                    songMseResultSortedSet.remove(songMseResultSortedSet.last());
+                }
             }
         }
 
