@@ -1,4 +1,3 @@
-#W celu użycia pliku należy zmienić jego nazwę na "application.yml" i ustawić dane dostępowe do bazy danych
 spring:
   profiles.active: development
 ---
@@ -11,3 +10,10 @@ spring:
     username: USERNAME
     password: PASSWORD
     driver-class-name: com.mysql.cj.jdbc.Driver
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 50MB
+services:
+  extractor:
+    address: http://localhost:5000

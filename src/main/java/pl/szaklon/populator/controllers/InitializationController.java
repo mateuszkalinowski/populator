@@ -17,9 +17,12 @@ public class InitializationController {
     @Autowired
     private InitializationService initializationService;
 
+    final static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(pl.szaklon.populator.controllers.InitializationController.class);
+
+
     @PostMapping
     public ResponseEntity getUrls(@RequestBody ArrayList<SongData> urls) {
-
+        logger.info("Got POST call on endpoint '/initialization'");
         return initializationService.getUrls(urls);
     }
 }

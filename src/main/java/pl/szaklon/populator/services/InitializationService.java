@@ -5,8 +5,10 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import pl.szaklon.populator.dtos.Message;
 import pl.szaklon.populator.dtos.SongData;
 import pl.szaklon.populator.sql.QueriesBuilder;
 
@@ -23,6 +25,9 @@ import java.util.HashMap;
 @Service
 public class InitializationService {
 
+    @Value("${services.extractor.address}")
+    private String extractorUrl;
+
     @Autowired
     private QueriesBuilder queriesBuilder;
 
@@ -31,16 +36,16 @@ public class InitializationService {
     public ResponseEntity getUrls(ArrayList<SongData> songDataList) {
         ObjectMapper mapper = new ObjectMapper();
 
-        logger.info(String.format("Got %s songs",songDataList.size()));
+        logger.info(String.format("Got %s songs", songDataList.size()));
 
         try {
             logger.info("Asking exctractor about number of features");
-            HttpResponse<String> response = Unirest.get("http://localhost:5000/status").asString();
+            HttpResponse<String> response = Unirest.get(String.format("%s/status", extractorUrl)).asString();
             HashMap trainingResult =
                     new ObjectMapper().readValue(response.getBody(), HashMap.class);
 
             int numberOfFeatures = Integer.parseInt(trainingResult.get("n_features").toString());
-            logger.info(String.format("Number of features: %s",numberOfFeatures+""));
+            logger.info(String.format("Number of features: %s", numberOfFeatures + ""));
 
             try {
                 queriesBuilder.dropSongsFeauturesTable();
@@ -50,13 +55,14 @@ public class InitializationService {
                 queriesBuilder.createSongsFeaturesTable(numberOfFeatures);
 
                 int index = 0;
-                for(SongData songData : songDataList) {
+                for (SongData songData : songDataList) {
                     File tmpMusicFile = new File("/tmp/tmpfile");
                     tmpMusicFile.deleteOnExit();
                     tmpMusicFile.createNewFile();
                     String url = songData.getUrl();
-                    try (BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
-                         FileOutputStream fileOutputStream =  new FileOutputStream(tmpMusicFile)) {
+                    try {
+                        BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
+                        FileOutputStream fileOutputStream = new FileOutputStream(tmpMusicFile);
                         byte dataBuffer[] = new byte[16654];
                         int bytesRead;
                         while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
@@ -64,35 +70,32 @@ public class InitializationService {
                         }
                         fileOutputStream.flush();
 
-                        HttpResponse<String> extractingFeaturesResult = Unirest.post("http://localhost:5000/extract_features")
-                                .field("file", tmpMusicFile,"multipart/form-data")
+                        HttpResponse<String> extractingFeaturesResult = Unirest.post(String.format("%s/extract_features", extractorUrl))
+                                .field("file", tmpMusicFile, "multipart/form-data")
                                 .asString();
 
                         String extractingFeaturesResultString = extractingFeaturesResult.getBody();
 
                         extractingFeaturesResultString = extractingFeaturesResultString.trim();
 
-                        String values[] = extractingFeaturesResultString.substring(2,extractingFeaturesResultString.length()-2).split(",");
+                        String values[] = extractingFeaturesResultString.substring(2, extractingFeaturesResultString.length() - 2).split(",");
 
                         double[] features = new double[values.length];
 
-                        for(int i = 0; i < values.length;i++) {
+                        for (int i = 0; i < values.length; i++) {
                             features[i] = Double.valueOf(values[i]);
                         }
 
-                        queriesBuilder.insertIntoSongsFeaturesTable(index,songData.getName(),songData.getUrl(),features);
-                        queriesBuilder.insertIntoSongsInfoTable(index,songData.getGenre());
+                        queriesBuilder.insertIntoSongsFeaturesTable(index, songData.getName(), songData.getUrl(), features);
+                        queriesBuilder.insertIntoSongsInfoTable(index, songData.getGenre());
 
-                        logger.info(String.format("Added song `%s`, from url `%s`, with features: %s",songData.getName(), songData.getUrl(),Arrays.toString(features)));
+                        logger.info(String.format("Added song `%s`, from url `%s`, with features: %s", songData.getName(), songData.getUrl(), Arrays.toString(features)));
 
-                         index++;
-
-
-
+                        index++;
 
 
                     } catch (IOException e) {
-                        logger.error(String.format("Song `%s` couldn't have been downloaded from the URL `%s`",songData.getName(),songData.getUrl()));
+                        logger.error(String.format("Song `%s` couldn't have been downloaded from the URL `%s`", songData.getName(), songData.getUrl()));
                     }
                 }
 
@@ -102,11 +105,15 @@ public class InitializationService {
             }
 
         } catch (UnirestException exception) {
-            ResponseEntity.status(500).build();
+            String message = String.format("Couldn't access extractor, make sure that address '%s' provided in 'application.yml' file is correct", extractorUrl);
+            logger.error(message);
+            return ResponseEntity.status(500).body(new Message(message));
         } catch (IOException e) {
-            e.printStackTrace();
+            String message = "Body of the request is in not proper format";
+            logger.error(message);
+            return ResponseEntity.badRequest().body(new Message(message));
         }
-
+        logger.info("Initialization finished");
         return ResponseEntity.ok().build();
     }
 }
