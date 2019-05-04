@@ -22,6 +22,8 @@ public class QueriesBuilder {
         PreparedStatement preparedStatement = connection.prepareStatement(query);
 
         preparedStatement.executeUpdate();
+
+        connection.close();
     }
 
     public void dropSongsFeauturesTable() throws SQLException {
@@ -32,6 +34,7 @@ public class QueriesBuilder {
         PreparedStatement preparedStatement = connection.prepareStatement(query);
 
         preparedStatement.executeUpdate();
+        connection.close();
     }
 
     public void createSongsInfoTable() throws SQLException {
@@ -46,6 +49,7 @@ public class QueriesBuilder {
         PreparedStatement preparedStatement = connection.prepareStatement(query);
 
         preparedStatement.executeUpdate();
+        connection.close();
 
     }
 
@@ -66,6 +70,7 @@ public class QueriesBuilder {
         PreparedStatement preparedStatement = connection.prepareStatement(query);
 
         preparedStatement.executeUpdate();
+        connection.close();
 
     }
 
@@ -91,6 +96,7 @@ public class QueriesBuilder {
         }
 
         preparedStatement.execute();
+        connection.close();
     }
 
     public void insertIntoSongsInfoTable(int id, String genre) throws SQLException{
@@ -104,6 +110,7 @@ public class QueriesBuilder {
         preparedStatement.setString(2,genre);
 
         preparedStatement.execute();
+        connection.close();
 
     }
 
