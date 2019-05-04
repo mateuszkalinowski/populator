@@ -38,6 +38,7 @@ Method: POST
 Parameters:  
 song - MultipartFile (song to recognize)  
 numberOfSongs - a number (optional parameter (default value - 3), sets how many top matching songs will be returned)  
+genre - string (optional parameter, if set, only songs from selected genre will be taken into account)
 Sample response:  
 
     [
