@@ -34,8 +34,8 @@ Body (application/json):
     
 ## How to run
 1. Clone repository
-2. Copy application-sample.yml and change its name to application.yml
-3. Set database path, user and password
-4. Run: 'mvn package'
+2. Copy application-sample.yml and change its name to application.yml (file is located in resource folder)
+3. Set database path, user and password in application.yml
+4. Go to main folder and run: 'mvn package'
 5. Go to "target" folder
 6. Run: 'java -jar populator-0.0.1-SNAPSHOT.jar
