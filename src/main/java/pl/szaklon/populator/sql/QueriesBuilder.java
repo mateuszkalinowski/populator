@@ -50,6 +50,8 @@ public class QueriesBuilder {
 
         String query = "CREATE TABLE `populator`.`SONGS_INFO` (\n" +
                 "  `ID` INT NOT NULL,\n" +
+                "  `NAME` VARCHAR(128) NOT NULL,\n" +
+                "  `URL` VARCHAR(128) NOT NULL,\n" +
                 "  `GENRE` VARCHAR(45) NULL,\n" +
                 "  PRIMARY KEY (`ID`));\n";
 
@@ -65,9 +67,7 @@ public class QueriesBuilder {
         Connection connection = dataSource.getConnection();
 
         String query = "CREATE TABLE `populator`.`SONGS_FEATURES` (\n" +
-                "  `ID` INT NOT NULL,\n" +
-                "  `NAME` VARCHAR(128) NOT NULL,\n" +
-                "  `URL` VARCHAR(128) NOT NULL,\n";
+                "  `ID` INT NOT NULL,\n";
 
         for (int i = 0; i < numberOfFeatures; i++) {
             query += String.format("  `FEATURE_%s` DECIMAL(20,16) NOT NULL,\n", i);
@@ -81,11 +81,11 @@ public class QueriesBuilder {
 
     }
 
-    public void insertIntoSongsFeaturesTable(int id, String name, String url, double[] features) throws SQLException {
+    public void insertIntoSongsFeaturesTable(int id, double[] features) throws SQLException {
         Connection connection = dataSource.getConnection();
 
         String query = "INSERT INTO `populator`.`SONGS_FEATURES` VALUES\n" +
-                "(?,?,?";
+                "(?";
 
         for (int i = 0; i < features.length; i++) {
             query += ",?";
@@ -95,26 +95,26 @@ public class QueriesBuilder {
         PreparedStatement preparedStatement = connection.prepareStatement(query);
 
         preparedStatement.setInt(1, id);
-        preparedStatement.setString(2, name);
-        preparedStatement.setString(3, url);
 
         for (int i = 0; i < features.length; i++) {
-            preparedStatement.setDouble(i + 4, features[i]);
+            preparedStatement.setDouble(i + 2, features[i]);
         }
 
         preparedStatement.execute();
         connection.close();
     }
 
-    public void insertIntoSongsInfoTable(int id, String genre) throws SQLException {
+    public void insertIntoSongsInfoTable(int id, String name, String url,String genre) throws SQLException {
         Connection connection = dataSource.getConnection();
 
-        String query = "INSERT INTO `populator`.`SONGS_INFO` VALUES (?,?);";
+        String query = "INSERT INTO `populator`.`SONGS_INFO` VALUES (?,?,?,?);";
 
         PreparedStatement preparedStatement = connection.prepareStatement(query);
 
         preparedStatement.setInt(1, id);
-        preparedStatement.setString(2, genre);
+        preparedStatement.setString(2, name);
+        preparedStatement.setString(3, url);
+        preparedStatement.setString(4, genre);
 
         preparedStatement.execute();
         connection.close();

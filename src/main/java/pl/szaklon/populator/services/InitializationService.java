@@ -86,8 +86,8 @@ public class InitializationService {
                             features[i] = Double.valueOf(values[i]);
                         }
 
-                        queriesBuilder.insertIntoSongsFeaturesTable(index, songData.getName(), songData.getUrl(), features);
-                        queriesBuilder.insertIntoSongsInfoTable(index, songData.getGenre());
+                        queriesBuilder.insertIntoSongsFeaturesTable(index, features);
+                        queriesBuilder.insertIntoSongsInfoTable(index, songData.getName(), songData.getUrl(),songData.getGenre());
 
                         logger.info(String.format("Added song `%s`, from url `%s`, with features: %s", songData.getName(), songData.getUrl(), Arrays.toString(features)));
 
