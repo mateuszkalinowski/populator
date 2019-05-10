@@ -4,8 +4,8 @@ Microservice for creating database with music features from https://gitlab.com/n
 
 ## Created tables
 
-1. ID,NAME,URL,FEATURE_0,...,FEATURE_N-1
-2. ID,GENRE
+1. ID,FEATURE_0,...,FEATURE_N-1
+2. ID,NAME,URL,GENRE
 
 First table for counted features, second for arbitrarily known facts about the songs (can be expanded later).
 
