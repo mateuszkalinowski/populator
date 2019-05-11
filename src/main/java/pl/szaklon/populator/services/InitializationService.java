@@ -32,11 +32,9 @@ public class InitializationService {
     @Autowired
     private QueriesBuilder queriesBuilder;
 
-    final static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(pl.szaklon.populator.services.InitializationService.class);
+    private final static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(pl.szaklon.populator.services.InitializationService.class);
 
     public ResponseEntity getUrls(ArrayList<SongData> songDataList) {
-        ObjectMapper mapper = new ObjectMapper();
-
         logger.info(String.format("Got %s songs", songDataList.size()));
 
         try {

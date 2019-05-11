@@ -30,14 +30,14 @@ public class SongRecognitionService {
     @Autowired
     private QueriesBuilder queriesBuilder;
 
-    public ResponseEntity rezognizeSong(MultipartFile song, int numberOfSongs, String genre) {
+    public ResponseEntity rezognizeSong(byte[] song, int numberOfSongs, String genre) {
 
         try {
             File songToRecognize = new File("/tmp/songToRecognize");
             songToRecognize.createNewFile();
 
             FileOutputStream fileOutputStream = new FileOutputStream(songToRecognize);
-            fileOutputStream.write(song.getBytes());
+            fileOutputStream.write(song);
             fileOutputStream.close();
 
             HttpResponse<String> extractingFeaturesResult = Unirest.post(String.format("%s/extract_features",extractorUrl))

@@ -84,15 +84,15 @@ public class QueriesBuilder {
     public void insertIntoSongsFeaturesTable(int id, double[] features) throws SQLException {
         Connection connection = dataSource.getConnection();
 
-        String query = "INSERT INTO `populator`.`SONGS_FEATURES` VALUES\n" +
-                "(?";
+        StringBuilder query = new StringBuilder("INSERT INTO `populator`.`SONGS_FEATURES` VALUES\n" +
+                "(?");
 
-        for (int i = 0; i < features.length; i++) {
-            query += ",?";
+        for (double ignored : features) {
+            query.append(",?");
         }
-        query += ");";
+        query.append(");");
 
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        PreparedStatement preparedStatement = connection.prepareStatement(query.toString());
 
         preparedStatement.setInt(1, id);
 

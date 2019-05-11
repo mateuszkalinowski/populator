@@ -6,9 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.szaklon.populator.dtos.SongData;
 import pl.szaklon.populator.services.InitializationService;
 
-import javax.sql.DataSource;
 import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("initialization")
@@ -17,7 +15,7 @@ public class InitializationController {
     @Autowired
     private InitializationService initializationService;
 
-    final static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(pl.szaklon.populator.controllers.InitializationController.class);
+    private final static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(pl.szaklon.populator.controllers.InitializationController.class);
 
 
     @PostMapping
