@@ -22,16 +22,19 @@ Body (application/json):
 
     [
     {
+        "id": 1,
         "url": "https://freepd.com/music/City%20Sunshine.mp3",
         "genre": "Rock",
         "name": "City Sunshine"
     },
     {
+        "id": 2,
         "url": "https://freepd.com/music/Stereotype%20News.mp3",
         "genre": "Folk",
         "name": "Stereotype News"
     }
     ]
+Id must be a number, and unique for each song
 #### Songs recognition
 Address: localhost:8080/recognize  
 Method: POST  
@@ -43,15 +46,11 @@ Sample response:
 
     [
     {
-        "name": "Stereotype News",
-        "url": "https://freepd.com/music/Stereotype%20News.mp3",
-        "genre": "Folk",
+        "id": 2
         "mse": 0
     },
     {
-        "name": "Adevriting",
-        "url": "https://freepd.com/music/Advertising.mp3",
-        "genre": "Rock",
+        "id": 1
         "mse": 0.7105980199986179
     }
     ]
