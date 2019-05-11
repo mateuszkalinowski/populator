@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SongData {
+    private String id;
     private String url;
     private String genre;
     private String name;

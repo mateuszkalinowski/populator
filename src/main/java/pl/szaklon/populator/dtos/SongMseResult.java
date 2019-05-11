@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SongMseResult implements Comparable<SongMseResult> {
 
-    private String name;
-    private String url;
-    private String genre;
+    private int id;
     private double mse;
 
     @Override

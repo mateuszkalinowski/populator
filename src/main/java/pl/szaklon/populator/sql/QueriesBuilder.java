@@ -147,7 +147,7 @@ public class QueriesBuilder {
 
                 mse /= features.length;
 
-                songMseResultSortedSet.add(new SongMseResult(rs.getString("NAME"), rs.getString("URL"), rs.getString("GENRE"), mse));
+                songMseResultSortedSet.add(new SongMseResult(Integer.valueOf(rs.getString("ID")), mse));
 
                 while (songMseResultSortedSet.size() > numberOfSongs) {
                     songMseResultSortedSet.remove(songMseResultSortedSet.last());

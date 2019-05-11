@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -54,8 +55,11 @@ public class InitializationService {
                 queriesBuilder.createSongsInfoTable();
                 queriesBuilder.createSongsFeaturesTable(numberOfFeatures);
 
-                int index = 0;
                 for (SongData songData : songDataList) {
+                    if(songData.getId() == null) {
+                        logger.error(String.format("Couldn't add song `%s`, id can't be null",songData.toString()));
+                        continue;
+                    }
                     File tmpMusicFile = new File("/tmp/tmpfile");
                     tmpMusicFile.deleteOnExit();
                     tmpMusicFile.createNewFile();
@@ -74,6 +78,11 @@ public class InitializationService {
                                 .field("file", tmpMusicFile, "multipart/form-data")
                                 .asString();
 
+                        if(extractingFeaturesResult.getStatus() == 400) {
+                            logger.error(String.format("Couldn't add song `%s`, this is not an audio file",songData.toString()));
+                            return ResponseEntity.badRequest().build();
+                        }
+
                         String extractingFeaturesResultString = extractingFeaturesResult.getBody();
 
                         extractingFeaturesResultString = extractingFeaturesResultString.trim();
@@ -85,13 +94,17 @@ public class InitializationService {
                         for (int i = 0; i < values.length; i++) {
                             features[i] = Double.valueOf(values[i]);
                         }
-
-                        queriesBuilder.insertIntoSongsFeaturesTable(index, features);
-                        queriesBuilder.insertIntoSongsInfoTable(index, songData.getName(), songData.getUrl(),songData.getGenre());
-
+                        try {
+                            queriesBuilder.insertIntoSongsFeaturesTable(Integer.valueOf(songData.getId()), features);
+                            queriesBuilder.insertIntoSongsInfoTable(Integer.valueOf(songData.getId()), songData.getName(), songData.getUrl(), songData.getGenre());
+                        } catch (NumberFormatException e) {
+                            logger.error(String.format("Couldn't add song `%s`, id is not a number",songData.toString()));
+                            continue;
+                        } catch (SQLIntegrityConstraintViolationException e) {
+                            logger.error(String.format("Couldn't add song `%s`, id is already taken",songData.toString()));
+                            continue;
+                        }
                         logger.info(String.format("Added song `%s`, from url `%s`, with features: %s", songData.getName(), songData.getUrl(), Arrays.toString(features)));
-
-                        index++;
 
 
                     } catch (IOException e) {

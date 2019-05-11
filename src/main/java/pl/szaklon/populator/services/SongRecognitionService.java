@@ -44,6 +44,11 @@ public class SongRecognitionService {
                     .field("file", songToRecognize,"multipart/form-data")
                     .asString();
 
+            if(extractingFeaturesResult.getStatus() == 400) {
+                logger.error("Provided file is not an audio file");
+                return ResponseEntity.badRequest().build();
+            }
+
             String extractingFeaturesResultString = extractingFeaturesResult.getBody();
 
             extractingFeaturesResultString = extractingFeaturesResultString.trim();
