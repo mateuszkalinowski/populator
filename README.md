@@ -49,8 +49,10 @@ Sample response:
     }
     ]
 ### Add song to database
-Address: localhost:8080/initialization/addSong/{id}  
-id - id of a song  
+Address: localhost:8080/initialization/addSong/id  
+id - id of a song   
+Body:  
+song - binary (song to add)  
 ##### Success: status 200
 ##### Failure: status 400, if:  
 id already exists  
