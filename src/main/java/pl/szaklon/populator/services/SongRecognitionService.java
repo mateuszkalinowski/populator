@@ -30,7 +30,7 @@ public class SongRecognitionService {
     @Autowired
     private QueriesBuilder queriesBuilder;
 
-    public ResponseEntity rezognizeSong(byte[] song, int numberOfSongs, String genre) {
+    public ResponseEntity rezognizeSong(byte[] song, int numberOfSongs) {
 
         try {
             File songToRecognize = new File("/tmp/songToRecognize");
@@ -63,7 +63,7 @@ public class SongRecognitionService {
 
             logger.info(String.format("Features of song to recognize: %s", Arrays.toString(features)));
 
-            SortedSet<SongMseResult> result = queriesBuilder.mse(features,numberOfSongs, genre);
+            SortedSet<SongMseResult> result = queriesBuilder.mse(features,numberOfSongs);
 
             logger.info("Songs recognition finished, result:");
             for (SongMseResult songMseResult : result) {

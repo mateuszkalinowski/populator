@@ -6,7 +6,7 @@ spring:
   application:
     name: populator
   datasource:
-    url: jdbc:mysql://PATH_TO_DATABASE?useUnicode=yes&characterEncoding=UTF-8&useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://PATH_TO_DATABASE?useUnicode=yes&characterEncoding=UTF-8&useSSL=false&serverTimezone=UTC&_allowPublicKeyRetrieval=true
     username: USERNAME
     password: PASSWORD
     driver-class-name: com.mysql.cj.jdbc.Driver

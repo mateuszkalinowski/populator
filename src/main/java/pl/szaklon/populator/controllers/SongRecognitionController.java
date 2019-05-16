@@ -16,9 +16,9 @@ public class SongRecognitionController {
 
 
     @PostMapping
-    public ResponseEntity recognizeSong(@RequestBody byte[] bytes, @RequestParam(required = false, defaultValue = "3") int numberOfSongs, @RequestParam(required = false, defaultValue = "") String genre) {
+    public ResponseEntity recognizeSong(@RequestBody byte[] bytes, @RequestParam(required = false, defaultValue = "3") int numberOfSongs) {
         logger.info("Got POST call on endpoint '/recognize'");
-        return songRecognitionService.rezognizeSong(bytes,numberOfSongs,genre);
+        return songRecognitionService.rezognizeSong(bytes,numberOfSongs);
     }
 
 }

@@ -48,14 +48,12 @@ public class InitializationService {
 
             try {
                 queriesBuilder.dropSongsFeauturesTable();
-                queriesBuilder.dropSongsInfoTable();
 
-                queriesBuilder.createSongsInfoTable();
                 queriesBuilder.createSongsFeaturesTable(numberOfFeatures);
 
                 for (SongData songData : songDataList) {
-                    if(songData.getId() == null) {
-                        logger.error(String.format("Couldn't add song `%s`, id can't be null",songData.toString()));
+                    if (songData.getId() == null) {
+                        logger.error(String.format("Couldn't add song `%s`, id can't be null", songData.toString()));
                         continue;
                     }
                     File tmpMusicFile = new File("/tmp/tmpfile");
@@ -76,8 +74,8 @@ public class InitializationService {
                                 .field("file", tmpMusicFile, "multipart/form-data")
                                 .asString();
 
-                        if(extractingFeaturesResult.getStatus() == 400) {
-                            logger.error(String.format("Couldn't add song `%s`, this is not an audio file",songData.toString()));
+                        if (extractingFeaturesResult.getStatus() == 400) {
+                            logger.error(String.format("Couldn't add song `%s`, this is not an audio file", songData.toString()));
                             return ResponseEntity.badRequest().build();
                         }
 
@@ -94,19 +92,18 @@ public class InitializationService {
                         }
                         try {
                             queriesBuilder.insertIntoSongsFeaturesTable(Integer.valueOf(songData.getId()), features);
-                            queriesBuilder.insertIntoSongsInfoTable(Integer.valueOf(songData.getId()), songData.getName(), songData.getUrl(), songData.getGenre());
                         } catch (NumberFormatException e) {
-                            logger.error(String.format("Couldn't add song `%s`, id is not a number",songData.toString()));
+                            logger.error(String.format("Couldn't add song `%s`, id is not a number", songData.toString()));
                             continue;
                         } catch (SQLIntegrityConstraintViolationException e) {
-                            logger.error(String.format("Couldn't add song `%s`, id is already taken",songData.toString()));
+                            logger.error(String.format("Couldn't add song `%s`, id is already taken", songData.toString()));
                             continue;
                         }
-                        logger.info(String.format("Added song `%s`, from url `%s`, with features: %s", songData.getName(), songData.getUrl(), Arrays.toString(features)));
+                        logger.info(String.format("Added song from url `%s`, with features: %s", songData.getUrl(), Arrays.toString(features)));
 
 
                     } catch (IOException e) {
-                        logger.error(String.format("Song `%s` couldn't have been downloaded from the URL `%s`", songData.getName(), songData.getUrl()));
+                        logger.error(String.format("Song with id `%s` couldn't have been downloaded from the URL `%s`", songData.getId(), songData.getUrl()));
                     }
                 }
 
@@ -126,5 +123,62 @@ public class InitializationService {
         }
         logger.info("Initialization finished");
         return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity addSong(byte[] song, int id) {
+
+        try {
+            File songToRecognize = new File("/tmp/songToRecognize");
+            songToRecognize.createNewFile();
+
+            FileOutputStream fileOutputStream = new FileOutputStream(songToRecognize);
+            fileOutputStream.write(song);
+            fileOutputStream.close();
+
+            HttpResponse<String> extractingFeaturesResult = Unirest.post(String.format("%s/extract_features", extractorUrl))
+                    .field("file", songToRecognize, "multipart/form-data")
+                    .asString();
+
+            if (extractingFeaturesResult.getStatus() == 400) {
+                logger.error("Provided file is not an audio file");
+                return ResponseEntity.badRequest().build();
+            }
+
+            String extractingFeaturesResultString = extractingFeaturesResult.getBody();
+
+            extractingFeaturesResultString = extractingFeaturesResultString.trim();
+
+            String values[] = extractingFeaturesResultString.substring(2, extractingFeaturesResultString.length() - 2).split(",");
+
+            double[] features = new double[values.length];
+
+            for (int i = 0; i < values.length; i++) {
+                features[i] = Double.valueOf(values[i]);
+            }
+
+            logger.info(String.format("Features of song to add: %s", Arrays.toString(features)));
+
+            queriesBuilder.insertIntoSongsFeaturesTable(id, features);
+
+            return ResponseEntity.ok().build();
+
+        } catch (IOException e) {
+
+        } catch (UnirestException e) {
+            String message = String.format("Couldn't access extractor, make sure that address '%s' provided in 'application.yml' file is correct", extractorUrl);
+            logger.error(message);
+            return ResponseEntity.status(500).body(new Message(message));
+        } catch (NumberFormatException e) {
+            logger.error(String.format("Couldn't add song, id '%s' is not a number", id));
+        } catch (SQLIntegrityConstraintViolationException e) {
+            String message = String.format("Couldn't add song, id '%s' is already taken", id);
+            logger.error(message);
+            return ResponseEntity.badRequest().body(new Message(message));
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+        }
+
+        return ResponseEntity.badRequest().build();
+
     }
 }

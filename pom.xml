@@ -6,11 +6,11 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.1.4.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
     <groupId>pl.szaklon</groupId>
     <artifactId>populator</artifactId>
-    <version>0.5-SNAPSHOT</version>
+    <version>1.0-BETA</version>
     <name>populator</name>
     <description>Demo project for Spring Boot</description>
 
@@ -19,10 +19,6 @@
     </properties>
 
     <dependencies>
-        <!--<dependency>-->
-            <!--<groupId>org.springframework.boot</groupId>-->
-            <!--<artifactId>spring-boot-starter-data-jpa</artifactId>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>

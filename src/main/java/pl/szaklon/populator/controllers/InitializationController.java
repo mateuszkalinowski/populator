@@ -23,4 +23,10 @@ public class InitializationController {
         logger.info("Got POST call on endpoint '/initialization'");
         return initializationService.getUrls(urls);
     }
+
+    @PostMapping(value = "/addSong/{id}")
+    public ResponseEntity recognizeSong(@RequestBody byte[] bytes, @PathVariable int id) {
+        logger.info("Got POST call on endpoint '/addSong' with id: " + id);
+        return initializationService.addSong(bytes,id);
+    }
 }

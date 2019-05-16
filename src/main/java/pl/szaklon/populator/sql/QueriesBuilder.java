@@ -17,21 +17,8 @@ public class QueriesBuilder {
 
     final static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(pl.szaklon.populator.sql.QueriesBuilder.class);
 
-
     @Autowired
     private DataSource dataSource;
-
-    public void dropSongsInfoTable() throws SQLException {
-        Connection connection = dataSource.getConnection();
-
-        String query = "DROP TABLE IF EXISTS `populator`.`SONGS_INFO`";
-
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-
-        preparedStatement.executeUpdate();
-
-        connection.close();
-    }
 
     public void dropSongsFeauturesTable() throws SQLException {
         Connection connection = dataSource.getConnection();
@@ -42,24 +29,6 @@ public class QueriesBuilder {
 
         preparedStatement.executeUpdate();
         connection.close();
-    }
-
-    public void createSongsInfoTable() throws SQLException {
-
-        Connection connection = dataSource.getConnection();
-
-        String query = "CREATE TABLE `populator`.`SONGS_INFO` (\n" +
-                "  `ID` INT NOT NULL,\n" +
-                "  `NAME` VARCHAR(128) NOT NULL,\n" +
-                "  `URL` VARCHAR(128) NOT NULL,\n" +
-                "  `GENRE` VARCHAR(45) NULL,\n" +
-                "  PRIMARY KEY (`ID`));\n";
-
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-
-        preparedStatement.executeUpdate();
-        connection.close();
-
     }
 
     public void createSongsFeaturesTable(int numberOfFeatures) throws SQLException {
@@ -104,27 +73,10 @@ public class QueriesBuilder {
         connection.close();
     }
 
-    public void insertIntoSongsInfoTable(int id, String name, String url,String genre) throws SQLException {
+    public SortedSet<SongMseResult> mse(double[] features, int numberOfSongs) throws SQLException {
         Connection connection = dataSource.getConnection();
 
-        String query = "INSERT INTO `populator`.`SONGS_INFO` VALUES (?,?,?,?);";
-
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-
-        preparedStatement.setInt(1, id);
-        preparedStatement.setString(2, name);
-        preparedStatement.setString(3, url);
-        preparedStatement.setString(4, genre);
-
-        preparedStatement.execute();
-        connection.close();
-
-    }
-
-    public SortedSet<SongMseResult> mse(double[] features, int numberOfSongs, String genre) throws SQLException {
-        Connection connection = dataSource.getConnection();
-
-        String query = "SELECT * FROM populator.SONGS_FEATURES JOIN populator.SONGS_INFO ON SONGS_FEATURES.ID = SONGS_INFO.ID";
+        String query = "SELECT * FROM populator.SONGS_FEATURES";
 
         PreparedStatement preparedStatement = connection.prepareStatement(query);
 
@@ -133,8 +85,6 @@ public class QueriesBuilder {
         SortedSet<SongMseResult> songMseResultSortedSet = new TreeSet<>();
 
         while (rs.next()) {
-
-            if(genre.equals("") || rs.getString("GENRE").toLowerCase().trim().equals(genre.toLowerCase().trim())) {
 
                 double mse = 0;
 
@@ -152,7 +102,6 @@ public class QueriesBuilder {
                 while (songMseResultSortedSet.size() > numberOfSongs) {
                     songMseResultSortedSet.remove(songMseResultSortedSet.last());
                 }
-            }
         }
 
         return songMseResultSortedSet;
