@@ -5,7 +5,7 @@ Microservice for creating database with music features from https://gitlab.com/n
 ## Created tables
 
 1. ID,FEATURE_0,...,FEATURE_N-1
-2. ID,NAME,URL,GENRE
+2. ID,NAME,URL
 
 First table for counted features, second for arbitrarily known facts about the songs (can be expanded later).
 
@@ -24,13 +24,11 @@ Body (application/json):
     {
         "id": 1,
         "url": "https://freepd.com/music/City%20Sunshine.mp3",
-        "genre": "Rock",
         "name": "City Sunshine"
     },
     {
         "id": 2,
         "url": "https://freepd.com/music/Stereotype%20News.mp3",
-        "genre": "Folk",
         "name": "Stereotype News"
     }
     ]
@@ -41,7 +39,6 @@ Method: POST
 Parameters:  
 song - binary (song to recognize)  
 numberOfSongs - a number (optional parameter (default value - 3), sets how many top matching songs will be returned)  
-genre - string (optional parameter, if set, only songs from selected genre will be taken into account)
 Sample response:  
 
     [
