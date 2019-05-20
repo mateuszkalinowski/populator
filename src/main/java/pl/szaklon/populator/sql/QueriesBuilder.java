@@ -23,7 +23,7 @@ public class QueriesBuilder {
     public void dropSongsFeauturesTable() throws SQLException {
         Connection connection = dataSource.getConnection();
 
-        String query = "DROP TABLE IF EXISTS `populator`.`SONGS_FEATURES`";
+        String query = "DROP TABLE IF EXISTS SONGS_FEATURES";
 
         PreparedStatement preparedStatement = connection.prepareStatement(query);
 
@@ -35,7 +35,7 @@ public class QueriesBuilder {
 
         Connection connection = dataSource.getConnection();
 
-        String query = "CREATE TABLE `populator`.`SONGS_FEATURES` (\n" +
+        String query = "CREATE TABLE SONGS_FEATURES (\n" +
                 "  `ID` INT NOT NULL,\n";
 
         for (int i = 0; i < numberOfFeatures; i++) {
@@ -53,7 +53,7 @@ public class QueriesBuilder {
     public void insertIntoSongsFeaturesTable(int id, double[] features) throws SQLException {
         Connection connection = dataSource.getConnection();
 
-        StringBuilder query = new StringBuilder("INSERT INTO `populator`.`SONGS_FEATURES` VALUES\n" +
+        StringBuilder query = new StringBuilder("INSERT INTO `SONGS_FEATURES` VALUES\n" +
                 "(?");
 
         for (double ignored : features) {
@@ -76,7 +76,7 @@ public class QueriesBuilder {
     public SortedSet<SongMseResult> mse(double[] features, int numberOfSongs) throws SQLException {
         Connection connection = dataSource.getConnection();
 
-        String query = "SELECT * FROM populator.SONGS_FEATURES";
+        String query = "SELECT * FROM SONGS_FEATURES";
 
         PreparedStatement preparedStatement = connection.prepareStatement(query);
 
