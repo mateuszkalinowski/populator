@@ -60,8 +60,19 @@ id is not a number
 ## How to run
 1. Clone repository
 2. Copy application-sample.yml and change its name to application.yml (file is located in resource folder)
-3. Set database path, user and password in application.yml
-4. Set extractor address in applicaiton.yml (default: http://localhost:5000)
-4. Go to main folder and run: 'mvn package'
-5. Go to "target" folder
-6. Run: 'java -jar populator-1.0-BETA.jar
+3. Create schema on MySQL server, for instance with name "populator"  
+(assumed you have mysql installed)
+
+    $ mysql -u username -p  
+    $ CREATE DATABASE populator; (in mysql console that you entered using previous command)   
+    $ exit  
+ 
+In the application.yml file:
+4. Set database path (with schema name), user and password, for instance:  
+    
+        jdbc:mysql://localhost:3306/populator?useUnicode=yes&characterEncoding=UTF-8&useSSL=false&serverTimezone=UTC&_allowPublicKeyRetrieval=true)  
+        
+5. Set extractor address in applicaiton.yml (default: http://localhost:5000)
+6. Go to main folder and run: 'mvn package'
+7. Go to "target" folder
+8. Run: 'java -jar populator-1.0-BETA.jar
