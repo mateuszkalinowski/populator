@@ -104,6 +104,8 @@ public class QueriesBuilder {
                 }
         }
 
+        connection.close();
+
         return songMseResultSortedSet;
     }
 
